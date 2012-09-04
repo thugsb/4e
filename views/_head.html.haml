@@ -1,0 +1,19 @@
+%meta{:charset => "utf-8"}
+%meta{:content => "", :name => "author"}
+%meta{:content => "", :name => "description"}
+%meta{:content => "IE=edge,chrome=1", "http-equiv" => "X-UA-Compatible"}
+%meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
+-#%link{:href => '#insert-web-fonts-here', :rel => 'stylesheet', :type => 'text/css'}
+= csrf_meta_tags
+
+%title
+  = t "app_name"
+  = yield :page_title
+
+= javascript_include_tag 'speedo/modernizr.min.js'
+/[if lt IE 9] 
+  %script{:src => "https://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"}
+= stylesheet_link_tag :application
+= javascript_include_tag 'speedo/respond.js'
+= javascript_include_tag :application
+= yield :head
