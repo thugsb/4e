@@ -1,0 +1,4 @@
+version=ruby-1.9.3-p194@4e
+rvm use $version --create
+rvm env -- $version > .powenv
+

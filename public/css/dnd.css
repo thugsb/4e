@@ -1,4 +1,9 @@
 
+#main > .accordion {
+  margin-left:-16px;
+  margin-right:-16px;
+}
+
 div.dataTables_length label{width:460px;float:left;text-align:left;}
 div.dataTables_length select{width:75px;}
 div.dataTables_filter label{float:right;width:460px;}

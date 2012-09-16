@@ -27,7 +27,18 @@ function show_items(sections) {
     });
   });
   function success(d) {
-    console.log(d);
+    var types = [];
+    $.each(json_04_new_items.D20Rules.RulesElement, function(i,v) {
+      $.each(v.specific, function(ii,vv) {
+        if (vv['@name'] === 'Magic Item Type') {
+          console.log(vv.$);
+          if (types.indexOf(vv.$) < 1) {
+            types.push(vv.$);
+          }
+        }
+      });
+    });
+    console.log(types);
   }
 }
 
@@ -49,7 +60,7 @@ function show_races(sections) {
       }
     });
     $('#races .accordion-inner table').dataTable({
-      "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+      "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
       'iDisplayLength':30,
       "sPaginationType": "bootstrap",
       'aaData': races,
