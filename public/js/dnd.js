@@ -32,13 +32,15 @@ function show_items(sections) {
       $.each(v.specific, function(ii,vv) {
         if (vv['@name'] === 'Magic Item Type') {
           console.log(vv.$);
-          if (types.indexOf(vv.$) < 1) {
+          if (vv.$ && types.indexOf(vv.$) == -1) {
             types.push(vv.$);
+            console.log(types);
           }
         }
       });
     });
     console.log(types);
+    alert('f');
   }
 }
 
