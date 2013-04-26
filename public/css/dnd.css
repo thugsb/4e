@@ -21,5 +21,5 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; line-height:16px; }
 .null { color: magenta; }
 .key { color: red; }
 
-#items table thead .filter_number input {width:20px;}
-#items table thead .filter_select select {width:80px;}
+table thead .filter_number input {width:20px;}
+table thead .filter_select select {width:80px;}

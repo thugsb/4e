@@ -16,6 +16,7 @@ $(function() {
     if ($(this).attr('id') === 'races') {show_races(sections);}
     if ($(this).attr('id') === 'feats') {show_feats(sections);}
     if ($(this).attr('id') === 'items') {show_items(sections);}
+    if ($(this).data('json')) {show_class(sections, $(this).data('json'), $(this).attr('id'));}
       
 
   });
@@ -23,6 +24,86 @@ $(function() {
   
   
 });
+
+
+function show_class(sections, json, id) {
+  $.ajax({
+    url:'/js/data/'+sections[0]+'.js',
+    success: classSuccess,
+  });
+  function classSuccess(d) {
+    var DnDclass = [];
+    $.each(window[json].D20Rules.RulesElement, function(i,v) {
+      DnDclass.push(v);
+    });
+    $('#'+id+' .accordion-inner table').before('<p id="classLvlFilter"></p>');
+    $('#'+id+' .accordion-inner table').dataTable({
+      "sPaginationType": "bootstrap",
+      'aaData': DnDclass,
+      'aoColumnDefs': [
+        {"aTargets": [ 0 ],sTitle:'Lvl', mData:function(obj) {
+          var result = $.grep(obj.specific, function(e){ return e['@name'] == 'Level'; });
+          if (result.length == 0) {
+            return '0';
+          } else if (result.length == 1) {
+            if (result[0].$) {
+              return result[0].$;
+            } else {
+              return '0';
+            }
+          } else {
+            console.log(result);
+            return result;
+          }
+        }},
+        {"aTargets": [ 1 ],sTitle:'Name', mData:function(obj) {
+          var power, result = $.grep(obj.specific, function(e){ return e['@name'] == 'Power Usage'; });
+          if (result.length == 0) {
+            power = false;
+          } else if (result.length == 1) {
+            if (result[0].$) {
+              power = result[0].$;
+            } else {
+              power = false;
+            }
+          } else {
+            power = false;
+          }
+          if (power === 'At-Will') {
+            return '<div class="badge badge-success">'+ obj['@name'] +'</div>';
+          } else if (power === 'Encounter') {
+            return '<div class="badge badge-important">'+ obj['@name'] +'</div>';
+          } else if (power === 'Daily') {
+            return '<div class="badge">'+ obj['@name'] +'</div>';
+          } else {
+            return obj['@name'];
+          }
+        }}
+      ],
+      fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+        $(nRow).attr('data-item', aData['@internal-id'] );
+        return nRow;
+      }
+    }).columnFilter({  
+      sPlaceHolder: "head:after",
+      aoColumns: [
+        { sSelector: "#classLvlFilter", type: "number" },
+        null
+      ]
+    });
+    
+    $(document).on('click','#'+id+' tr',function() {
+      var power = $(this).attr('data-item');
+      var r = DnDclass.filter(function(obj) {
+        return obj['@internal-id'] === power;
+      })[0];
+      // console.log(r);
+      var output = readObj(r,'');
+      str = JSON.stringify(r,undefined,2);
+      $('#'+id+' .details').html('<pre>'+syntaxHighlight(str)+'</pre>');
+    });
+  }
+}
 
 function show_feats(sections) {
   $.ajax({
@@ -35,7 +116,6 @@ function show_feats(sections) {
         feats.push(v);
       }
     });
-    $('#feats .accordion-inner table').before('<p id="itemLvlFilter"></p><p id="itemTypeFilter"></p>');
     $('#feats .accordion-inner table').dataTable({
       "sPaginationType": "bootstrap",
       'aaData': window.feats,
