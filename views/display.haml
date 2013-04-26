@@ -1,13 +1,13 @@
 
-- @sections = [{id: 'races',files: ['06-races'],title: 'Races'}, {id: 'feats',files: ['09-feats'],title: 'Feats'}, {id: 'items',files: ['03-base-items','04-new-items','40-gear'],title:'Items'}]
+- @sections = [{id: 'Races',files: ['06-races']}, {id: 'Feats',files: ['09-feats']}, {id: 'Items',files: ['03-base-items','04-new-items','40-gear']}]
 
 #main.accordion
   - @sections.each do |s|
-    .accordion-group{id: s[:id], data:{js: s[:files].join(',')}}
+    .accordion-group{id: s[:id].downcase, data:{js: s[:files].join(',')}}
       .accordion-heading
-        %a.accordion-toggle{"data-parent" => "#main", "data-toggle" => "collapse", :href => "##{s[:id]}_body"}
-          = s[:title]
-      .accordion-body.collapse{id:"#{s[:id]}_body"}
+        %a.accordion-toggle{"data-parent" => "#main", "data-toggle" => "collapse", :href => "##{s[:id].downcase}_body"}
+          = s[:id]
+      .accordion-body.collapse{id:"#{s[:id].downcase}_body"}
         .accordion-inner
           .row
             .span4

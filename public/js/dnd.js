@@ -1,5 +1,6 @@
 window.items = [];
 window.item_types = ['-'];
+window.feats = [];
 
 $(function() {
   
@@ -13,12 +14,55 @@ $(function() {
     var sections = $(this).attr('data-js').split(',');
     console.log(sections);
     if ($(this).attr('id') === 'races') {show_races(sections);}
+    if ($(this).attr('id') === 'feats') {show_feats(sections);}
     if ($(this).attr('id') === 'items') {show_items(sections);}
       
 
   });
   
+  
+  
 });
+
+function show_feats(sections) {
+  $.ajax({
+    url:'/js/data/'+sections[0]+'.js',
+    success: success9,
+  });
+  function success9(d) {
+    $.each(json_09_feats.D20Rules.RulesElement, function(i,v) {
+      if (v['@type'] === 'Feat') {
+        feats.push(v);
+      }
+    });
+    $('#feats .accordion-inner table').before('<p id="itemLvlFilter"></p><p id="itemTypeFilter"></p>');
+    $('#feats .accordion-inner table').dataTable({
+      "sPaginationType": "bootstrap",
+      'aaData': window.feats,
+      'aoColumnDefs': [
+        {"aTargets": [ 0 ],sTitle:'Name', mData:function(obj) {
+          return obj['@name'];
+        }}
+      ],
+      fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+        $(nRow).attr('data-item', aData['@internal-id'] );
+        return nRow;
+      }
+    });
+    
+    $(document).on('click','#feats tr',function() {
+      var feat = $(this).attr('data-item');
+      var r = feats.filter(function(obj) {
+        return obj['@internal-id'] === feat;
+      })[0];
+      // console.log(r);
+      var output = readObj(r,'');
+      str = JSON.stringify(r,undefined,2);
+      $('#feats .details').html('<pre>'+syntaxHighlight(str)+'</pre>');
+    });
+  }
+}
+
 
 function show_items(sections) {
   $.when(
