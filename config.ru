@@ -1,2 +1,3 @@
-require './4e'
+require './app'
+
 run Sinatra::Application
