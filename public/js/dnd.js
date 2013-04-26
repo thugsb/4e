@@ -62,9 +62,8 @@ function show_items(sections) {
 
 function makeItemsTable() {
   
+  $('#items .accordion-inner table').before('<p id="itemLvlFilter"></p><p id="itemTypeFilter"></p>');
   $('#items .accordion-inner table').dataTable({
-    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
-    'iDisplayLength':30,
     "sPaginationType": "bootstrap",
     'aaData': window.items,
     'aoColumnDefs': [
@@ -106,6 +105,13 @@ function makeItemsTable() {
       $(nRow).attr('data-item', aData['@internal-id'] );
       return nRow;
     }
+  }).columnFilter({  
+    sPlaceHolder: "head:after",
+    aoColumns: [
+      { sSelector: "#itemLvlFilter", type: "number" },
+      null,
+      { sSelector: "#itemTypeFilter", type: "select", values: item_types }
+    ]
   });
   
   $(document).on('click','#items tr',function() {
@@ -172,7 +178,7 @@ function show_races(sections) {
       }
     });
     $('#races .accordion-inner table').dataTable({
-      "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+      // "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
       'iDisplayLength':30,
       "sPaginationType": "bootstrap",
       'aaData': races,

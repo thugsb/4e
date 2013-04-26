@@ -4,12 +4,11 @@
   margin-right:-16px;
 }
 
-div.dataTables_length label{width:460px;float:left;text-align:left;}
 div.dataTables_length select{width:75px;}
-div.dataTables_filter label{float:right;width:460px;}
 div.dataTables_info{padding-top:8px;}
 div.dataTables_paginate{float:right;margin:0;}
 
+.pagination a, .pagination span {padding:0 8px;}
 
 pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; line-height:16px; }
 .string { color: green; }
@@ -17,3 +16,6 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; line-height:16px; }
 .boolean { color: blue; }
 .null { color: magenta; }
 .key { color: red; }
+
+#items table thead .filter_number input {width:20px;}
+#items table thead .filter_select select {width:80px;}
