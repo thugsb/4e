@@ -1,3 +1,6 @@
+window.items = [];
+window.item_types = [];
+
 $(function() {
   
   $.extend( $.fn.dataTableExt.oStdClasses, {
@@ -18,30 +21,137 @@ $(function() {
 });
 
 function show_items(sections) {
-  $.each(sections, function(i,v) {
+  $.when(
     $.ajax({
-      url:'/js/data/'+v+'.js',
-      // data: data,
-      success: success,
-      // dataType: dataType
-    });
-  });
-  function success(d) {
-    var types = [];
-    $.each(json_04_new_items.D20Rules.RulesElement, function(i,v) {
+      url:'/js/data/'+sections[0]+'.js',
+      success: success3,
+    }),
+    $.ajax({
+      url:'/js/data/'+sections[1]+'.js',
+      success: success4,
+    })
+  ).then(function() {
+    $.each(items, function(i,v) {
       $.each(v.specific, function(ii,vv) {
         if (vv['@name'] === 'Magic Item Type') {
-          console.log(vv.$);
-          if (vv.$ && types.indexOf(vv.$) == -1) {
-            types.push(vv.$);
-            console.log(types);
+          // console.log(vv.$);
+          if (vv.$ && item_types.indexOf(vv.$) == -1) {
+            item_types.push(vv.$);
           }
         }
       });
+    });  
+    console.log(item_types);
+    makeItemsTable();
+  });
+  function success3(d) {
+    $.each(json_03_base_items.D20Rules.RulesElement, function(i,v) {
+      if (v.specific) {
+        window.items.push(v);
+      }
     });
-    console.log(types);
-    alert('f');
   }
+  function success4(d) {
+    $.each(json_04_new_items.D20Rules.RulesElement, function(i,v) {
+      if (v.specific) {
+        window.items.push(v);
+      }
+    });
+  }
+}
+
+function makeItemsTable() {
+  
+  $('#items .accordion-inner table').dataTable({
+    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+    'iDisplayLength':30,
+    "sPaginationType": "bootstrap",
+    'aaData': window.items,
+    'aoColumnDefs': [
+      {"aTargets": [ 0 ],sTitle:'Lvl', mData:function(obj) {
+        var result = $.grep(obj.specific, function(e){ return e['@name'] == 'Level'; });
+        if (result.length == 0) {
+          return '0';
+        } else if (result.length == 1) {
+          if (result[0].$) {
+            return result[0].$;
+          } else {
+            return '0';
+          }
+        } else {
+          console.log(result);
+          return result;
+        }
+      }},
+      {"aTargets": [ 1 ],sTitle:'Name', mData:function(obj) {
+        return obj['@name'];
+      }},
+      {"aTargets": [ 2 ],sTitle:'Type', mData:function(obj) {
+        var result = $.grep(obj.specific, function(e){ return e['@name'] == 'Magic Item Type'; });
+        if (result.length == 0) {
+          return '-';
+        } else if (result.length == 1) {
+          if (result[0].$) {
+            return result[0].$;
+          } else {
+            return '-';
+          }
+        } else {
+          console.log(result);
+          return result;
+        }
+      }}
+    ],
+    fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+      $(nRow).attr('data-item', aData['@internal-id'] );
+      return nRow;
+    }
+  });
+  
+  $(document).on('click','#items tr',function() {
+    var item = $(this).attr('data-item');
+    var r = items.filter(function(obj) {
+      return obj['@internal-id'] === item;
+    })[0];
+    // console.log(r);
+    var output = readObj(r,'');
+    str = JSON.stringify(r,undefined,2);
+    $('#items .details').html('<pre>'+syntaxHighlight(str)+'</pre>');
+  });
+}
+
+function syntaxHighlight(json) {
+  json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  json = json.replace(/\s+},/g, '').replace(/\s+{\n/g, "\n").replace(/,\n\s+"\$"/g, ' "$"').replace(/\\n/g, '<br>');
+  json = json.replace(/At-Will/g, "<span class='badge badge-success'>At-Will</span>").replace(/Encounter/g, "<span class='badge badge-important'>Encounter</span>").replace(/Daily/g, "<span class='badge'>Daily</span>");
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+    var cls = 'number';
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) {
+        cls = 'key';
+      } else {
+        cls = 'string';
+      }
+    } else if (/true|false/.test(match)) {
+      cls = 'boolean';
+    } else if (/null/.test(match)) {
+      cls = 'null';
+    }
+    return '<span class="' + cls + '">' + match + '</span>';
+  });
+}
+
+function readObj(obj,output) {
+  $.each(obj, function(i,v) {
+    if (typeof v === 'string') {
+      output += i+': '+v;
+    } else if (typeof v === 'object') {
+      readObj(v,output);
+    } else {
+      alert(typeof v);
+    }
+  });
+  return output;
 }
 
 
