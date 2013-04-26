@@ -1,5 +1,5 @@
 window.items = [];
-window.item_types = [];
+window.item_types = ['-'];
 
 $(function() {
   
@@ -29,6 +29,10 @@ function show_items(sections) {
     $.ajax({
       url:'/js/data/'+sections[1]+'.js',
       success: success4,
+    }),
+    $.ajax({
+      url:'/js/data/'+sections[2]+'.js',
+      success: success40,
     })
   ).then(function() {
     $.each(items, function(i,v) {
@@ -40,7 +44,8 @@ function show_items(sections) {
           }
         }
       });
-    });  
+    });
+    item_types.sort();
     console.log(item_types);
     makeItemsTable();
   });
@@ -53,6 +58,13 @@ function show_items(sections) {
   }
   function success4(d) {
     $.each(json_04_new_items.D20Rules.RulesElement, function(i,v) {
+      if (v.specific) {
+        window.items.push(v);
+      }
+    });
+  }
+  function success40(d) {
+    $.each(json_40_gear.D20Rules.RulesElement, function(i,v) {
       if (v.specific) {
         window.items.push(v);
       }
