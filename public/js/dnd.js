@@ -198,7 +198,7 @@ function show_items(sections) {
 
 function makeItemsTable() {
   
-  $('#items .accordion-inner table').before('<p id="itemLvlFilter"></p><p id="itemTypeFilter"></p>');
+  $('#items .accordion-inner table').before('<p id="itemLvlFilter"></p><p id="itemTypeFilter"></p><p id="itemRarityFilter"></p>');
   $('#items .accordion-inner table').dataTable({
     "sPaginationType": "bootstrap",
     'aaData': window.items,
@@ -235,7 +235,21 @@ function makeItemsTable() {
           console.log(result);
           return result;
         }
-      }}
+      }},
+      {"aTargets": [ 3 ],sTitle:'Rarity', mData:function(obj) {
+        var result = $.grep(obj.specific, function(e){ return e['@name'] == 'Rarity'; });
+        if (result.length == 0) {
+          return '-';
+        } else if (result.length == 1) {
+          if (result[0].$) {
+            return result[0].$;
+          } else {
+            return '-';
+          }
+        } else {
+          return result;
+        }
+      }},
     ],
     fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
       $(nRow).attr('data-item', aData['@internal-id'] );
@@ -246,7 +260,8 @@ function makeItemsTable() {
     aoColumns: [
       { sSelector: "#itemLvlFilter", type: "number" },
       null,
-      { sSelector: "#itemTypeFilter", type: "select", values: item_types }
+      { sSelector: "#itemTypeFilter", type: "select", values: item_types },
+      { sSelector: "#itemRarityFilter", type: "select", values: ['Common','Uncommon','Rare'] }
     ]
   });
   
