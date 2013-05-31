@@ -14,7 +14,7 @@ div.dataTables_paginate{float:right;margin:0;}
 
 .pagination a, .pagination span {padding:0 8px;}
 
-pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; line-height:16px; font-family: arial, sans-serif; }
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; line-height:16px; font-family:arial, sans-serif; word-break:normal; }
 .string { color: green; }
 .number { color: darkorange; }
 .boolean { color: blue; }
